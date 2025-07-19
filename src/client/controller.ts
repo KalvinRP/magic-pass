@@ -10,10 +10,9 @@ export async function loadMultiSSRComponents(config: SSRClientConfig & {
     components,
     ssrEndpoint,
     hydrateScriptUrl,
-    useJWT = false,
-    getToken,
     cacheProvider = defaultCacheProvider,
     sanitize = false,
+    useJWT = {active: false},
     getSkeleton = defaultSkeleton
   } = config;
 
@@ -32,13 +31,16 @@ export async function loadMultiSSRComponents(config: SSRClientConfig & {
   if (cachedHtml) {
     htmlList = JSON.parse(cachedHtml);
   } else {
+    let url: string = ssrEndpoint;
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
 
-    if (useJWT && getToken) {
-      const token = await getToken(components);
-      headers['Authorization'] = `Bearer ${token}`;
+    if (useJWT.active && useJWT.getToken) {
+      const token = await useJWT.getToken(components);
+
+      if (useJWT.asAuthHeader) headers['Authorization'] = `Bearer ${token}`;
+      if (useJWT.keyParams) url = `${ssrEndpoint}?${useJWT.keyParams}=${token}`
     }
 
     const res = await fetch(ssrEndpoint, {

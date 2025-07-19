@@ -2,7 +2,7 @@ import { defaultCacheProvider } from './caching';
 import { sanitizeHTML } from '../shared/sanitize';
 import { defaultSkeleton } from '../shared/dummy';
 export async function loadMultiSSRComponents(config) {
-    const { components, ssrEndpoint, hydrateScriptUrl, useJWT = false, getToken, cacheProvider = defaultCacheProvider, sanitize = false, getSkeleton = defaultSkeleton } = config;
+    const { components, ssrEndpoint, hydrateScriptUrl, cacheProvider = defaultCacheProvider, sanitize = false, useJWT = { active: false }, getSkeleton = defaultSkeleton } = config;
     components.forEach((component) => {
         const el = document.getElementById(component.containerId);
         if (el) {
@@ -17,12 +17,16 @@ export async function loadMultiSSRComponents(config) {
         htmlList = JSON.parse(cachedHtml);
     }
     else {
+        let url = ssrEndpoint;
         const headers = {
             'Content-Type': 'application/json',
         };
-        if (useJWT && getToken) {
-            const token = await getToken(components);
-            headers['Authorization'] = `Bearer ${token}`;
+        if (useJWT.active && useJWT.getToken) {
+            const token = await useJWT.getToken(components);
+            if (useJWT.asAuthHeader)
+                headers['Authorization'] = `Bearer ${token}`;
+            if (useJWT.keyParams)
+                url = `${ssrEndpoint}?${useJWT.keyParams}=${token}`;
         }
         const res = await fetch(ssrEndpoint, {
             method: 'POST',
