@@ -43,7 +43,7 @@ export async function loadMultiSSRComponents(config: SSRClientConfig & {
       if (useJWT.keyParams) url = `${ssrEndpoint}?${useJWT.keyParams}=${token}`
     }
 
-    const res = await fetch(ssrEndpoint, {
+    const res = await fetch(url, {
       method: 'POST',
       headers,
       body: JSON.stringify(components),
