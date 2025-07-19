@@ -1,4 +1,4 @@
-import type { SSRComponent, SSRClientConfig } from '../shared/types';
+import type { SSRComponent, SSRClientConfig, JWTOptions } from '../shared/types';
 import { defaultCacheProvider } from './caching';
 import { sanitizeHTML } from '../shared/sanitize';
 import { defaultSkeleton } from '../shared/dummy';
@@ -12,9 +12,16 @@ export async function loadMultiSSRComponents(config: SSRClientConfig & {
     hydrateScriptUrl,
     cacheProvider = defaultCacheProvider,
     sanitize = false,
-    useJWT = {active: false},
+    useJWT = {} as JWTOptions,
     getSkeleton = defaultSkeleton
   } = config;
+
+  const {
+    active = false,
+    getToken,
+    keyParams,
+    asAuthHeader,
+  } = useJWT;
 
   components.forEach((component) => {
     const el = document.getElementById(component.containerId);
@@ -36,11 +43,11 @@ export async function loadMultiSSRComponents(config: SSRClientConfig & {
       'Content-Type': 'application/json',
     };
 
-    if (useJWT.active && useJWT.getToken) {
-      const token = await useJWT.getToken(components);
+    if (active && getToken) {
+      const token = await getToken(components);
 
-      if (useJWT.asAuthHeader) headers['Authorization'] = `Bearer ${token}`;
-      if (useJWT.keyParams) url = `${ssrEndpoint}?${useJWT.keyParams}=${token}`
+      if (asAuthHeader) headers['Authorization'] = `Bearer ${token}`;
+      if (keyParams) url = `${ssrEndpoint}?${keyParams}=${token}`
     }
 
     const res = await fetch(url, {
