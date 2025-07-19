@@ -39,21 +39,24 @@ export async function loadMultiSSRComponents(config: SSRClientConfig & {
     htmlList = JSON.parse(cachedHtml);
   } else {
     let url: string = ssrEndpoint;
+    console.log("before getToken", url)
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
-
+    
     if (active && getToken) {
       const token = await getToken(components);
-
+      
       if (asAuthHeader) headers['Authorization'] = `Bearer ${token}`;
       if (keyParams) url = `${ssrEndpoint}?${keyParams}=${token}`
+      console.log("in getToken", url)
     }
-
+    
+    console.log("after getToken", url);
     const res = await fetch(url, {
       method: 'POST',
       headers,
-      body: JSON.stringify(components),
+      ...(active && {body: JSON.stringify(components)}),
     });
 
     htmlList = await res.json();
