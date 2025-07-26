@@ -15,10 +15,12 @@ export async function fetchTheBlueprint(endpoint, token, retryGetToken, useToken
         const newToken = await retryGetToken();
         if (!newToken)
             return null;
+        // Buat headers baru
+        const newHeaders = {};
         if (useToken?.useAsAuth) {
-            headers['Authorization'] = newToken;
+            newHeaders['Authorization'] = newToken;
         }
-        res = await fetch(buildUrl(newToken), { headers });
+        res = await fetch(buildUrl(newToken), { headers: newHeaders });
     }
     if (!res.ok) {
         throw new Error(`[SSR] Failed to fetch: ${res.status} ${res.statusText}`);

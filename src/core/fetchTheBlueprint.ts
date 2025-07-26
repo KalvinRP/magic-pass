@@ -27,11 +27,13 @@ export async function fetchTheBlueprint(
     const newToken = await retryGetToken();
     if (!newToken) return null;
 
+    // Buat headers baru
+    const newHeaders: Record<string, string> = {};
     if (useToken?.useAsAuth) {
-      headers['Authorization'] = newToken;
+      newHeaders['Authorization'] = newToken;
     }
 
-    res = await fetch(buildUrl(newToken), { headers });
+    res = await fetch(buildUrl(newToken), { headers: newHeaders });
   }
 
   if (!res.ok) {
