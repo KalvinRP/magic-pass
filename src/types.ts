@@ -12,21 +12,17 @@ export interface UseTokenOption {
   useAsParams?: string;
 }
 
-interface BundledHydrationOption {
-  isBundled: true;
-  bundledHydrationUrl: string; // wajib
-  singleHydratePrefix?: never; // dilarang
-}
-
-interface PerComponentHydrationOption {
-  isBundled: false;
-  bundledHydrationUrl?: never; // dilarang
-  singleHydratePrefix: string; // wajib
-}
-
-export type HydrationOption =
-  | BundledHydrationOption
-  | PerComponentHydrationOption;
+type HydrationOption =
+  | {
+      isBundled: true;
+      bundledHydrationUrl: string;
+      singleHydratePrefix?: never;
+    }
+  | {
+      isBundled: false;
+      bundledHydrationUrl?: never;
+      singleHydratePrefix: string;
+    };
 
 export type SkeletonRenderer = (component: ComponentDef, timeoutMs: number) => string;
 export type CacheManager = (key: string, value?: string) => string | null;

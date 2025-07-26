@@ -67,6 +67,7 @@ export async function loadComponentScript(script, scriptPrefix) {
         if (document.querySelector(`script[src="${fullUrl}"]`))
             return resolve();
         const scriptEl = document.createElement('script');
+        scriptEl.type = 'module';
         scriptEl.src = fullUrl;
         scriptEl.async = true;
         scriptEl.onload = () => resolve();
