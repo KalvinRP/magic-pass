@@ -20,6 +20,7 @@ export interface MagicPassOptions {
   mainEndpoint: string;
   hydrationEndpoint: string;
   useToken?: UseTokenOption;
+  useReactHydration?: boolean;
   manageCache?: CacheManager;
   manageSkeleton?: SkeletonRenderer;
 }

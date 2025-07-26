@@ -1,13 +1,28 @@
-export async function ensureAutoHydrateLoaded(hydrationEndpoint: string) {
-  if ((window as any).AutoHydrate) return;
+export async function ensureAutoHydrateLoaded(
+  hydrationEndpoint: string,
+  withReactHydration: boolean = false
+) {
+  if ((window as any).AutoHydrate) {
+    // Update config jika AutoHydrate sudah ada
+    (window as any).AutoHydrate.config = {
+      ...(window as any).AutoHydrate.config || {},
+      withReactHydration,
+    };
+    return;
+  }
 
-  const scriptUrl = `${hydrationEndpoint.replace(/\/$/, '')}/auto-hydrate`;
+  const scriptUrl = `${hydrationEndpoint.replace(/\/$/, '')}`;
 
-  // Cek apakah script sudah ada
   const existingScript = document.querySelector(`script[src="${scriptUrl}"]`);
   if (existingScript) {
-    // Kalau sudah ada, tunggu sampai AutoHydrate tersedia
     await waitForAutoHydrate();
+    // Set config setelah script dimuat
+    if ((window as any).AutoHydrate) {
+      (window as any).AutoHydrate.config = {
+        ...(window as any).AutoHydrate.config || {},
+        withReactHydration,
+      };
+    }
     return;
   }
 
@@ -18,6 +33,14 @@ export async function ensureAutoHydrateLoaded(hydrationEndpoint: string) {
     script.onload = async () => {
       try {
         await waitForAutoHydrate();
+
+        if ((window as any).AutoHydrate) {
+          (window as any).AutoHydrate.config = {
+            ...(window as any).AutoHydrate.config || {},
+            withReactHydration,
+          };
+        }
+
         resolve();
       } catch (err) {
         reject(err);
@@ -27,6 +50,7 @@ export async function ensureAutoHydrateLoaded(hydrationEndpoint: string) {
     document.head.appendChild(script);
   });
 }
+
 
 function waitForAutoHydrate(timeoutMs = 3000, intervalMs = 50): Promise<void> {
   return new Promise((resolve, reject) => {

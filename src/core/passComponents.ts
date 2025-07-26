@@ -17,6 +17,7 @@ export async function passComponents({
     mainEndpoint,
     hydrationEndpoint,
     useToken,
+    useReactHydration = false,
     manageCache = defaultCacheManager,
     manageSkeleton = defaultSkeleton,
 }: MagicPassOptions) {

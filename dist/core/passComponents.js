@@ -6,7 +6,7 @@ import { getToken } from '../utils/token';
 import { fetchTheBlueprint } from './fetchTheBlueprint';
 import { defaultSkeleton } from '../utils/skeleton';
 import { defaultCacheManager } from '../utils/cache';
-export async function passComponents({ components, mainEndpoint, hydrationEndpoint, useToken, manageCache = defaultCacheManager, manageSkeleton = defaultSkeleton, }) {
+export async function passComponents({ components, mainEndpoint, hydrationEndpoint, useToken, useReactHydration = false, manageCache = defaultCacheManager, manageSkeleton = defaultSkeleton, }) {
     await ensureAutoHydrateLoaded(hydrationEndpoint);
     initializeGlobalRetryState();
     attachRetryClickListener();
