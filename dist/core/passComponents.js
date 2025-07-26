@@ -6,8 +6,10 @@ import { getToken } from '../utils/token';
 import { fetchTheBlueprint } from './fetchTheBlueprint';
 import { defaultSkeleton } from '../utils/skeleton';
 import { defaultCacheManager } from '../utils/cache';
-export async function passComponents({ components, mainEndpoint, hydrationEndpoint, useToken, useReactHydration = false, manageCache = defaultCacheManager, manageSkeleton = defaultSkeleton, }) {
-    await ensureAutoHydrateLoaded(hydrationEndpoint);
+export async function passComponents({ components, mainEndpoint, hydrationOption, useToken, useReactHydration = false, manageCache = defaultCacheManager, manageSkeleton = defaultSkeleton, }) {
+    if (hydrationOption.isBundled) {
+        await ensureAutoHydrateLoaded(hydrationOption.bundledHydrationUrl, useReactHydration);
+    }
     initializeGlobalRetryState();
     attachRetryClickListener();
     for (const component of components) {
@@ -50,9 +52,7 @@ export async function passComponents({ components, mainEndpoint, hydrationEndpoi
         if (!response)
             return;
         const { rendered } = await response.json();
-        for (const entry of rendered) {
-            hydrateComponent(entry, components);
-        }
+        await Promise.all(rendered.map((entry) => hydrateComponent(entry, components, hydrationOption.singleHydratePrefix)));
     }
     catch (error) {
         console.error('[SSR] Error rendering components:', error);

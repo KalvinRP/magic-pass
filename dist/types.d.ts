@@ -10,12 +10,23 @@ export interface UseTokenOption {
     useAsAuth?: boolean;
     useAsParams?: string;
 }
+interface BundledHydrationOption {
+    isBundled: true;
+    bundledHydrationUrl: string;
+    singleHydratePrefix?: never;
+}
+interface PerComponentHydrationOption {
+    isBundled: false;
+    bundledHydrationUrl?: never;
+    singleHydratePrefix: string;
+}
+export type HydrationOption = BundledHydrationOption | PerComponentHydrationOption;
 export type SkeletonRenderer = (component: ComponentDef, timeoutMs: number) => string;
 export type CacheManager = (key: string, value?: string) => string | null;
 export interface MagicPassOptions {
     components: ComponentDef[];
     mainEndpoint: string;
-    hydrationEndpoint: string;
+    hydrationOption: HydrationOption;
     useToken?: UseTokenOption;
     useReactHydration?: boolean;
     manageCache?: CacheManager;
@@ -26,4 +37,6 @@ export interface RenderedComponent {
     html: string;
     containerId: string;
     error?: string;
+    script?: string;
 }
+export {};

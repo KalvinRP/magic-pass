@@ -1,4 +1,4 @@
-export async function ensureAutoHydrateLoaded(hydrationEndpoint, withReactHydration = false) {
+export async function ensureAutoHydrateLoaded(hydrationEndpoint, withReactHydration) {
     if (window.AutoHydrate) {
         // Update config jika AutoHydrate sudah ada
         window.AutoHydrate.config = {

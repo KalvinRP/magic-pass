@@ -1,1 +1,1 @@
-export declare function ensureAutoHydrateLoaded(hydrationEndpoint: string, withReactHydration?: boolean): Promise<void>;
+export declare function ensureAutoHydrateLoaded(hydrationEndpoint: string, withReactHydration: boolean): Promise<void>;
