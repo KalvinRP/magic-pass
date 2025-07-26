@@ -90,7 +90,7 @@ export async function loadComponentScript(
     throw new Error('[SSR] loadComponentScript: Missing script or scriptPrefix');
   }
 
-  const fullUrl = `${scriptPrefix.replace(/\/$/, '')}/${script.replace(/^\//, '')}`;
+  const fullUrl = `${scriptPrefix.replace(/\/$/, '')}/${script.replace(/^\//, '')}.js`;
 
   return new Promise((resolve, reject) => {
     if (document.querySelector(`script[src="${fullUrl}"]`)) return resolve();
