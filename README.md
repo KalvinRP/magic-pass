@@ -1,35 +1,33 @@
 # loadMultiSSRComponents
 
-A lightweight SSR loader for injecting pre-rendered HTML and hydrating React components on the client.
+A lightweight SSR loader for injecting pre-rendered HTML and hydrating components on the client.
 
 ## Features
 
-- ✅ Batch or single SSR requests
-- 🔐 Optional JWT support
+- ✅ Enable multiple SSR requests for many components
+- 🔐 Optional JWT support (default settings available)
 - 🔁 Pluggable caching system (defaults to `sessionStorage`)
 - 💧 Hydration-ready with dynamic import
 - 🔌 Configurable SSR and hydration endpoints
 
-## Usage
+## Basic Usage
 
 ```ts
-import { loadMultiSSRComponents } from 'load-multi-ssr-components';
+import { passComponents } from 'magic-pass';
 
-useEffect(() => {
-  loadMultiSSRComponents({
-    ssrEndpoint: '/api/ssr/render',
-    hydrateScriptUrl: '/hydrate/bundle.js',
-    useJWT: true,
-    getToken: async (components) => {
-      const res = await fetch('/api/token');
-      return await res.text();
+passComponents({
+  components: [
+    {
+      componentName: 'HeroBanner',
+      props: { title: 'Selamat datang!' },
+      containerId: 'hero-container',
     },
-    components: [
-      {
-        name: 'intro',
-        props: { title: 'Halo Dunia' },
-        containerId: 'intro-slot',
-      },
-    ],
-  });
-}, []);
+    {
+      componentName: 'ProductList',
+      props: { category: 'populer' },
+      containerId: 'produk-container',
+    },
+  ],
+  mainEndpoint: 'http://my-ssr-server/api/ssr-component',
+  hydrationEndpoint: 'http://my-ssr-server/api/hydration'
+});

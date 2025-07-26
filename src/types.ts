@@ -17,8 +17,8 @@ export type CacheManager = (key: string, value?: string) => string | null;
 
 export interface MagicPassOptions {
   components: ComponentDef[];
-  mainEndpoint?: string;
-  hydrationEndpoint?: string;
+  mainEndpoint: string;
+  hydrationEndpoint: string;
   useToken?: UseTokenOption;
   manageCache?: CacheManager;
   manageSkeleton?: SkeletonRenderer;

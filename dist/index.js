@@ -1,3 +1,4 @@
-export * from './client/controller';
-export * from './shared/types';
-export * from './client/caching';
+import { passComponents } from './core/passComponents';
+export function MagicPass(options) {
+    return passComponents(options);
+}

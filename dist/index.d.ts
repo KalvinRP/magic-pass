@@ -1,3 +1,2 @@
-export * from './client/controller';
-export * from './shared/types';
-export * from './client/caching';
+import type { MagicPassOptions } from './types';
+export declare function MagicPass(options: MagicPassOptions): Promise<void>;

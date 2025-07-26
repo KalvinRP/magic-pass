@@ -4,7 +4,7 @@ import { renderErrorFallback } from './skeleton';
 export function renderComponentSkeleton(
   component: ComponentDef,
   skeletonRenderer: SkeletonRenderer,
-  timeoutMs: number
+  timeoutMs: number = 5000
 ) {
   const el = document.getElementById(component.containerId);
   if (!el) return;
