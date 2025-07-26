@@ -67,7 +67,7 @@ export async function passComponents({
             response = await fetchTheBlueprint(
                 mainEndpoint,
                 token,
-                () => getToken(cacheKey, { components: payload }, useToken.tokenEndpoint, manageCache),
+                () => getToken(cacheKey, { components: payload }, useToken.tokenEndpoint, manageCache, true),
                 useToken
             );
         }

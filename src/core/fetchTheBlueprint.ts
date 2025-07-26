@@ -27,13 +27,21 @@ export async function fetchTheBlueprint(
     const newToken = await retryGetToken();
     if (!newToken) return null;
 
-    // Buat headers baru
     const newHeaders: Record<string, string> = {};
     if (useToken?.useAsAuth) {
       newHeaders['Authorization'] = newToken;
     }
 
-    res = await fetch(buildUrl(newToken), { headers: newHeaders });
+    const newUrl = useToken?.useAsParams
+      ? `${endpoint}?${useToken.useAsParams}=${encodeURIComponent(newToken)}`
+      : endpoint;
+
+    console.log('[SSR] Retrying fetch with new token:', {
+      newUrl,
+      newHeaders,
+    });
+
+    res = await fetch(newUrl, { headers: newHeaders });
   }
 
   if (!res.ok) {

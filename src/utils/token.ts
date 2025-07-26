@@ -5,10 +5,13 @@ export async function getToken(
   key: string,
   payload: any,
   endpoint: string,
-  cache = defaultCacheManager
+  cache = defaultCacheManager,
+  bypassCache: boolean = false
 ): Promise<string | null> {
-  const cached = cache(key);
-  if (cached) return cached;
+  if (!bypassCache) {
+    const cached = cache(key);
+    if (cached) return cached;
+  }
 
   const res = await fetch(endpoint, {
     method: 'POST',
