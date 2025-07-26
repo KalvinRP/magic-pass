@@ -1,4 +1,4 @@
-import type { ComponentDef, RenderedComponent, SkeletonRenderer } from '../types';
+import type { ComponentDef, RenderedComponent, SkeletonRenderer, HydrationOption } from '../types';
 import { renderErrorFallback } from './skeleton';
 
 export function renderComponentSkeleton(
@@ -34,8 +34,12 @@ export function filterUnhydratedComponents(components: ComponentDef[]) {
 export async function hydrateComponent(
   { name, html, containerId, error, script }: RenderedComponent,
   components: ComponentDef[],
-  scriptPrefix?: string
+  hydrationOption: HydrationOption
 ): Promise<boolean> {
+  if (hydrationOption.addReactScript) {
+    await ensureReactLoaded();
+  }
+  
   const el = document.getElementById(containerId);
   if (!el || el.dataset.hydrated === 'true') return false;
 
@@ -52,11 +56,11 @@ export async function hydrateComponent(
   el.innerHTML = html;
   el.dataset.hydrated = 'true';
 
-    if (script && typeof (window as any).AutoHydrate === 'undefined') {
-    if (!scriptPrefix) {
+  if (script && typeof (window as any).AutoHydrate === 'undefined') {
+    if (!hydrationOption.singleHydratePrefix) {
       throw new Error('[SSR] Missing scriptPrefix for non-bundled hydration');
     }
-    await loadComponentScript(script, scriptPrefix);
+    await loadComponentScript(script, hydrationOption.singleHydratePrefix);
   }
 
   try {
@@ -105,4 +109,24 @@ export async function loadComponentScript(
   });
 }
 
+async function ensureReactLoaded(): Promise<void> {
+  if ((window as any).React && (window as any).ReactDOM) return;
+
+  await Promise.all([
+    new Promise<void>((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/react@18/umd/react.production.min.js';
+      script.onload = () => resolve();
+      script.onerror = reject;
+      document.head.appendChild(script);
+    }),
+    new Promise<void>((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js';
+      script.onload = () => resolve();
+      script.onerror = reject;
+      document.head.appendChild(script);
+    }),
+  ]);
+}
 

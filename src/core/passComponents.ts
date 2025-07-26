@@ -80,7 +80,7 @@ export async function passComponents({
         const { rendered } = await response.json();
 
         await Promise.all(rendered.map((entry: RenderedComponent) =>
-            hydrateComponent(entry, components, hydrationOption.singleHydratePrefix)
+            hydrateComponent(entry, components, hydrationOption)
         ));
 
     } catch (error) {

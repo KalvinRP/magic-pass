@@ -12,16 +12,18 @@ export interface UseTokenOption {
   useAsParams?: string;
 }
 
-type HydrationOption =
+export type HydrationOption =
   | {
       isBundled: true;
       bundledHydrationUrl: string;
       singleHydratePrefix?: never;
+      addReactScript?: boolean;
     }
-  | {
+    | {
       isBundled: false;
       bundledHydrationUrl?: never;
       singleHydratePrefix: string;
+      addReactScript?: boolean;
     };
 
 export type SkeletonRenderer = (component: ComponentDef, timeoutMs: number) => string;

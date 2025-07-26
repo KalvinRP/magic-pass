@@ -52,7 +52,7 @@ export async function passComponents({ components, mainEndpoint, hydrationOption
         if (!response)
             return;
         const { rendered } = await response.json();
-        await Promise.all(rendered.map((entry) => hydrateComponent(entry, components, hydrationOption.singleHydratePrefix)));
+        await Promise.all(rendered.map((entry) => hydrateComponent(entry, components, hydrationOption)));
     }
     catch (error) {
         console.error('[SSR] Error rendering components:', error);
