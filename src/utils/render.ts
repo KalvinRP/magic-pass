@@ -31,10 +31,11 @@ export function filterUnhydratedComponents(components: ComponentDef[]) {
   });
 }
 
-export function hydrateComponent(
-  { name, html, containerId, error }: RenderedComponent,
-  components: ComponentDef[]
-): boolean {
+export async function hydrateComponent(
+  { name, html, containerId, error, script }: RenderedComponent,
+  components: ComponentDef[],
+  scriptPrefix?: string
+): Promise<boolean> {
   const el = document.getElementById(containerId);
   if (!el || el.dataset.hydrated === 'true') return false;
 
@@ -50,6 +51,10 @@ export function hydrateComponent(
 
   el.innerHTML = html;
   el.dataset.hydrated = 'true';
+
+  if (script && typeof (window as any).AutoHydrate === 'undefined' && scriptPrefix) {
+    await loadComponentScript(script, scriptPrefix);
+  }
 
   try {
     (window as any).AutoHydrate?.hydrate(name, containerId, props);
@@ -73,3 +78,24 @@ function handleRenderError(el: HTMLElement, retryId: string, error: string) {
 
   el.innerHTML = renderErrorFallback(retryId, error);
 }
+
+export async function loadComponentScript(url: string, prefix?: string): Promise<void> {
+  let fullUrl = url;
+
+  // Tambahkan prefix jika URL belum absolute
+  if (!/^https?:\/\//.test(url) && prefix) {
+    fullUrl = `${prefix.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
+  }
+
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${fullUrl}"]`)) return resolve();
+
+    const script = document.createElement('script');
+    script.src = fullUrl;
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error(`Failed to load script: ${fullUrl}`));
+    document.head.appendChild(script);
+  });
+}
+
