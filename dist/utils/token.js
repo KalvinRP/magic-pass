@@ -1,8 +1,10 @@
 import { defaultCacheManager } from './cache';
-export async function getToken(key, payload, endpoint, cache = defaultCacheManager) {
-    const cached = cache(key);
-    if (cached)
-        return cached;
+export async function getToken(key, payload, endpoint, cache = defaultCacheManager, bypassCache = false) {
+    if (!bypassCache) {
+        const cached = cache(key);
+        if (cached)
+            return cached;
+    }
     const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

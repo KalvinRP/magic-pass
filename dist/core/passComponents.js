@@ -45,7 +45,7 @@ export async function passComponents({ components, mainEndpoint, hydrationEndpoi
             response = await fetchTheBlueprint(mainEndpoint, null);
         }
         else {
-            response = await fetchTheBlueprint(mainEndpoint, token, () => getToken(cacheKey, { components: payload }, useToken.tokenEndpoint, manageCache), useToken);
+            response = await fetchTheBlueprint(mainEndpoint, token, () => getToken(cacheKey, { components: payload }, useToken.tokenEndpoint, manageCache, true), useToken);
         }
         if (!response)
             return;

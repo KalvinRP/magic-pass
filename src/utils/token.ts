@@ -24,6 +24,7 @@ export async function getToken(
   const { token } = await res.json();
   if (!token) return null;
 
+
   cache(key, token);
   return token;
 }
