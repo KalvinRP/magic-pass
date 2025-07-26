@@ -33,7 +33,10 @@ export async function hydrateComponent({ name, html, containerId, error, script 
     const props = original?.props ?? {};
     el.innerHTML = html;
     el.dataset.hydrated = 'true';
-    if (script && typeof window.AutoHydrate === 'undefined' && scriptPrefix) {
+    if (script && typeof window.AutoHydrate === 'undefined') {
+        if (!scriptPrefix) {
+            throw new Error('[SSR] Missing scriptPrefix for non-bundled hydration');
+        }
         await loadComponentScript(script, scriptPrefix);
     }
     try {
@@ -55,20 +58,19 @@ function handleRenderError(el, retryId, error) {
     }
     el.innerHTML = renderErrorFallback(retryId, error);
 }
-export async function loadComponentScript(url, prefix) {
-    let fullUrl = url;
-    // Tambahkan prefix jika URL belum absolute
-    if (!/^https?:\/\//.test(url) && prefix) {
-        fullUrl = `${prefix.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
+export async function loadComponentScript(script, scriptPrefix) {
+    if (!script || !scriptPrefix) {
+        throw new Error('[SSR] loadComponentScript: Missing script or scriptPrefix');
     }
+    const fullUrl = `${scriptPrefix.replace(/\/$/, '')}/${script.replace(/^\//, '')}`;
     return new Promise((resolve, reject) => {
         if (document.querySelector(`script[src="${fullUrl}"]`))
             return resolve();
-        const script = document.createElement('script');
-        script.src = fullUrl;
-        script.async = true;
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error(`Failed to load script: ${fullUrl}`));
-        document.head.appendChild(script);
+        const scriptEl = document.createElement('script');
+        scriptEl.src = fullUrl;
+        scriptEl.async = true;
+        scriptEl.onload = () => resolve();
+        scriptEl.onerror = () => reject(new Error(`Failed to load script: ${fullUrl}`));
+        document.head.appendChild(scriptEl);
     });
 }
